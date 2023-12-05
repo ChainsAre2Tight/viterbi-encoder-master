@@ -35,7 +35,6 @@ class Grid:
 
     def create_graph(self):
         graphbuilder = GraphBuilder(self)
-        print(self.paths)
         graphbuilder.make_graph()
 
     def create_grid(self):
@@ -114,7 +113,6 @@ class Encoder:
         vertex = start_vertex
         for bit in message:
             result.append(self._binary_encoder.encode(f'{bit}{vertex}'))
-            print(vertex, f'{bit}{vertex}'[:-1], self._binary_encoder.encode(f'{bit}{vertex}'))
             vertex = f'{bit}{vertex}'[:-1]
 
         return result
@@ -192,7 +190,6 @@ class Encoder:
                     )
                 except KeyError:
                     continue
-                print('    ', path, path_metric)
                 if path_metric < min_metric:
                     min_metric = path_metric
                     result = path[1]
@@ -203,7 +200,6 @@ class Encoder:
         result = ''
         vertex = '0' * (self._binary_encoder.k - 1)
         for position in range(len(encoded_message)):
-            print(vertex, encoded_message[position])
             vertex = find_next_step(
                 vertex=vertex,
                 sequence=encoded_message,
