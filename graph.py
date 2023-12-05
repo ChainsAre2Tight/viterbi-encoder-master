@@ -1,4 +1,3 @@
-from encoder import Grid, BinaryEncoder
 import pyvis
 
 
@@ -9,10 +8,9 @@ class GraphBuilder:
     horizontal_offset = 300
     vertical_offset = 100
     _graph: pyvis.network.Network
-    _grid: Grid
 
-    def __init__(self, grid: Grid):
-        self._graph = pyvis.network.Network(notebook=True, directed=True, bgcolor=self.background_color)
+    def __init__(self, grid):
+        self._graph = pyvis.network.Network(notebook=True, directed=True, bgcolor=self.background_color, height=1000, width=1920)
         self._graph.toggle_physics(False)
 
         self._grid = grid
@@ -38,14 +36,7 @@ class GraphBuilder:
             for name, v in value.items():
                 if v == 0:
                     title = name
-            print(value.keys())
             if dibit in value.keys():
-                print(
-                    f'{index + 1} | {key[0]}',
-                    f'{index + 2} | {key[1]}',
-                    f'{title} ({value[dibit]})',
-                    sep='-------'
-                )
                 self._graph.add_edge(
                     f'{index + 1} | {key[0]}',
                     f'{index + 2} | {key[1]}',
@@ -57,9 +48,10 @@ class GraphBuilder:
         # make 2-dimensional array of vertices to address them later
         # X - index of column
         # Y - index of vertex within its column
+        format = '{0:0' + str(self._grid._encoder.k - 1) + 'b}'
 
         nodes: tuple[str] = tuple(
-            '{0:02b}'.format(i)
+            format.format(i)
             for i in range(2 ** (self._grid._encoder.k - 1))
         )
 
@@ -86,18 +78,3 @@ class GraphBuilder:
 
         # export
         self._graph.show('result.html')
-
-
-class TestGrid(Grid):
-
-    def create_graph(self):
-        graphbuilder = GraphBuilder(self)
-        graphbuilder.make_graph()
-
-    def __init__(self, encoder: tuple[str, str] | BinaryEncoder):
-        super().__init__(encoder)
-        self.create_graph()
-
-
-if __name__ == "__main__":
-    testgrid = TestGrid(encoder=('101', '111'))
