@@ -1,5 +1,6 @@
 from exceptions import RoadEndError
 from utils import hamming_distance, Pathfinder
+from graph import GraphBuilder
 
 
 class BinaryEncoder:
@@ -32,6 +33,11 @@ class Grid:
     _paths: dict
     _encoder: BinaryEncoder
 
+    def create_graph(self):
+        graphbuilder = GraphBuilder(self)
+        print(self.paths)
+        graphbuilder.make_graph()
+
     def create_grid(self):
         for vertex_index in range(2 ** (self._encoder.k - 1)):
             vertex = str('{0:0' + str(self._encoder.k - 1) + 'b}').format(vertex_index)
@@ -61,9 +67,12 @@ class Grid:
                     for path in paths_to_thread
                 ])
 
+                flag = False
                 for path in paths_to_thread:
-                    if self._paths[path][dibit] != min_difference:
+                    if self._paths[path][dibit] > min_difference or flag:
                         self._paths[path].pop(dibit)
+                    else:
+                        flag = True
 
     def __init__(self, encoder: tuple[str, str] | BinaryEncoder):
 
