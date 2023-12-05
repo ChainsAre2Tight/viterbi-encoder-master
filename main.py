@@ -20,6 +20,9 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--depth',
                         help='Maximum search distance for decoding. Default is 8',
                         required=False)
+    parser.add_argument('-g', '--graph',
+                        help='if present, a graph will also be constructed and saved in result.html',
+                        required=False)
 
     args = vars(parser.parse_args())
 
@@ -69,27 +72,38 @@ if __name__ == "__main__":
             depth_arg = 8
             print(f'Maximum search distance is set to 8 (default)')
 
+    # check if graph creation flag is provided
+    graph_flag = True if args['graph'] is not None else False
+
     match task:
         case 'draw_graph':
             print('Drawing graph...')
             grid = Grid(encoder=binary_encoder)
-            grid.create_graph()
+            grid.create_graph_grid()
             print('Successful')
 
         case 'encode':
             print('Encoding message...')
             encoder = Encoder(encoder=binary_encoder)
-            result = encoder.encode(input_args)
-            print('Result:', ''.join(result))
+            result = encoder.encode(input_args)[0]
+            print('Result:', ''.join(result[0]))
             print('Successful')
+            if graph_flag:
+                print('Saving graph...')
+                encoder.grid.create_graph_path(*result)
+                print('Graph saved')
 
         case 'decode':
             print('Decoding message...')
             encoder = Encoder(encoder=binary_encoder)
             message_to_decode = [
-                input_args[i:i+2]
+                input_args[i:i + 2]
                 for i in range(0, len(input_args), 2)
             ]
             result = encoder.decode(message_to_decode, maximum_depth=depth_arg)
             print('Result:', result)
             print('Successful')
+            if graph_flag:
+                print('Saving graph...')
+                encoder.grid.create_graph_path(message_to_decode, result[1])
+                print('Graph saved')

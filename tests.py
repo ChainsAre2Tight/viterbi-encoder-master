@@ -1,5 +1,5 @@
 import unittest
-from encoder import Grid, BinaryEncoder, hamming_distance, Encoder
+from encoder import Grid, BinaryEncoder, Encoder
 
 
 class TestBinaryEncoder(unittest.TestCase):
@@ -95,28 +95,28 @@ class TestEncoder(unittest.TestCase):
         encoder = Encoder(encoder=('1101', '1111'))
         self.assertEqual(
             ['11', '11', '10', '00'],
-            encoder.encode('1010')
+            encoder.encode('1010')[0]
         )
 
     def test_decode_1(self):
         encoder = Encoder(encoder=('1101', '1111'))
         self.assertEqual(
             '1010',
-            encoder.decode(['11', '11', '10', '00'], 4)
+            encoder.decode(['11', '11', '10', '00'], 4)[0]
         )
 
     def test_encode_2E(self):
         encoder = Encoder(encoder=('1101101', '1001111'))
         self.assertEqual(
             ['11', '10', '00', '00', '01', '10', '10', '00', '11'],
-            encoder.encode('100101011')
+            encoder.encode('100101011')[0]
         )
 
     def test_decode_2E(self):
         encoder = Encoder(encoder=('1101101', '1001111'))
         self.assertEqual(
             '100101011',
-            encoder.decode(['11', '10', '00', '00', '01', '10', '10', '00', '11'], maximum_depth=8)
+            encoder.decode(['11', '10', '00', '00', '01', '10', '10', '00', '11'], maximum_depth=8)[0]
         )
 
 

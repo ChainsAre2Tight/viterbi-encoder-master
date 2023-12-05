@@ -2,7 +2,9 @@ import pyvis
 
 
 class GraphBuilder:
-    vertex_color = 'red'
+    vertex_color = 'blue'
+    edge_color = 'black'
+    highlight_color = 'red'
     vertex_shape = 'dot'
     background_color = 'white'
     horizontal_offset = 300
@@ -10,7 +12,8 @@ class GraphBuilder:
     _graph: pyvis.network.Network
 
     def __init__(self, grid):
-        self._graph = pyvis.network.Network(notebook=True, directed=True, bgcolor=self.background_color, height=1000, width=1920)
+        self._graph = pyvis.network.Network(notebook=True, directed=True, bgcolor=self.background_color, height=1000,
+                                            width=1920)
         self._graph.toggle_physics(False)
 
         self._grid = grid
@@ -27,9 +30,10 @@ class GraphBuilder:
                 y=Y,
             )
 
-    def _add_translations(self, dibit: str, index: int):
-        assert 0 <= index < 4
+    def _add_translations(self, dibit: str, index: int, highlight_edges: list[tuple[str, str]] | None = None):
         assert dibit in ('00', '01', '10', '11')
+        if highlight_edges is None:
+            highlight_edges = []
 
         for key, value in self._grid.paths.items():
             title = 'error'
@@ -37,14 +41,15 @@ class GraphBuilder:
                 if v == 0:
                     title = name
             if dibit in value.keys():
+
+                edge = (f'{index + 1} | {key[0]}', f'{index + 2} | {key[1]}')
                 self._graph.add_edge(
-                    f'{index + 1} | {key[0]}',
-                    f'{index + 2} | {key[1]}',
-                    title=f'{title} ({value[dibit]})'
+                    edge[0], edge[1],
+                    title=f'{title} ({value[dibit]})',
+                    color=self.highlight_color if edge in highlight_edges else self.edge_color
                 )
 
-    def make_graph(self):
-
+    def make_graph(self, translations, highlight_edges: list[tuple[str, str]] | None = None):
         # make 2-dimensional array of vertices to address them later
         # X - index of column
         # Y - index of vertex within its column
@@ -55,26 +60,30 @@ class GraphBuilder:
             for i in range(2 ** (self._grid._encoder.k - 1))
         )
 
-        possible_translations = ('00', '01', '10', '11')
-
         vertices = [
             nodes
-            for _ in range(len(possible_translations) + 1)
+            for _ in range(len(translations) + 1)
         ]
 
         # place translations above
         Y = -(self.vertical_offset)
-        for index, translation in enumerate(possible_translations):
+        for index, translation in enumerate(translations):
             X = (self.horizontal_offset // 2) + self.horizontal_offset * index
-            self._graph.add_node(translation, x=X, y=Y, shape=self.vertex_shape, color=self.background_color)
+            self._graph.add_node(f'{index + 1} | {translation}', x=X, y=Y, shape=self.vertex_shape, color=self.background_color)
 
         # place columns
         for index, column in enumerate(vertices):
             self._add_column(column_index=index, vertices=column)
 
         # place edges
-        for index, dibit in enumerate(possible_translations):
-            self._add_translations(dibit=dibit, index=index)
+        for index, dibit in enumerate(translations):
+            self._add_translations(dibit=dibit, index=index, highlight_edges=highlight_edges)
 
         # export
         self._graph.show('result.html')
+
+    def make_graph_encode(self, translations: list[str] | tuple[str], path: list[tuple[str, str]]):
+        self.make_graph(translations=translations, highlight_edges=path)
+
+    def make_graph_from_grid(self):
+        self.make_graph(translations=('00', '01', '10', '11'))

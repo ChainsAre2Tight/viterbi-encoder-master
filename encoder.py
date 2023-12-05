@@ -32,10 +32,17 @@ class BinaryEncoder:
 class Grid:
     _paths: dict
     _encoder: BinaryEncoder
+    graph_builder: GraphBuilder
 
-    def create_graph(self):
-        graphbuilder = GraphBuilder(self)
-        graphbuilder.make_graph()
+    def create_graph_grid(self):
+        self.graph_builder.make_graph_from_grid()
+
+    def create_graph_path(self, translations: list[str], path: list[str]):
+        path_2 = [
+            (f'{i + 1} | {path[i]}', f'{i + 2} | {path[i+1]}')
+            for i in range(len(path) - 1)
+        ]
+        self.graph_builder.make_graph_encode(path=path_2, translations=translations)
 
     def create_grid(self):
         for vertex_index in range(2 ** (self._encoder.k - 1)):
@@ -83,6 +90,7 @@ class Grid:
         self._paths = dict()
         self.create_grid()
         self.purge_grid()
+        self.graph_builder = GraphBuilder(self)
 
     @property
     def paths(self):
@@ -105,19 +113,20 @@ class Encoder:
     def grid(self) -> Grid:
         return self._grid
 
-    def encode(self, message: str) -> list[str]:
+    def encode(self, message: str) -> tuple[list[str], list[str]]:
         assert set(message) == {'0', '1'}
 
         result = list()
-        start_vertex = '0' * (self._binary_encoder.k - 1)
-        vertex = start_vertex
+        vertex = '0' * (self._binary_encoder.k - 1)
+        path = [vertex, ]
         for bit in message:
             result.append(self._binary_encoder.encode(f'{bit}{vertex}'))
             vertex = f'{bit}{vertex}'[:-1]
+            path.append(vertex)
 
-        return result
+        return result, path
 
-    def decode(self, encoded_message: list[str], maximum_depth: int) -> str:
+    def decode(self, encoded_message: list[str], maximum_depth: int) -> tuple[str, list[str]]:
 
         def find_lowest_path_metric(
                 depth: int,
@@ -199,6 +208,7 @@ class Encoder:
         assert maximum_depth > 0
         result = ''
         vertex = '0' * (self._binary_encoder.k - 1)
+        path = [vertex, ]
         for position in range(len(encoded_message)):
             vertex = find_next_step(
                 vertex=vertex,
@@ -208,8 +218,9 @@ class Encoder:
                 grid=self._grid,
             )
             result = result + vertex[0]
+            path.append(vertex)
 
-        return result
+        return result, path
 
 
 if __name__ == "__main__":
