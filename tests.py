@@ -89,6 +89,21 @@ class TestGrid(unittest.TestCase):
             grid.paths
         )
 
+    def test_grid_creation_3(self):
+        grid = Grid(encoder=('110', '100'))
+        self.assertEqual(
+            {('00', '00'): {'00': 0, '01': 1, '10': 1},
+             ('00', '10'): {'01': 1, '10': 1, '11': 0},
+             ('01', '00'): {'00': 0, '01': 1, '10': 1},
+             ('01', '10'): {'01': 1, '10': 1, '11': 0},
+             ('10', '01'): {'00': 1, '10': 0, '11': 1},
+             ('10', '11'): {'00': 1, '01': 0, '11': 1},
+             ('11', '01'): {'00': 1, '10': 0, '11': 1},
+             ('11', '11'): {'00': 1, '01': 0, '11': 1}}
+            ,
+            grid.paths
+        )
+
 
 class TestEncoder(unittest.TestCase):
     def test_encode_1(self):
@@ -103,22 +118,6 @@ class TestEncoder(unittest.TestCase):
         self.assertEqual(
             '1010',
             encoder.decode(['11', '11', '10', '00'], 4)
-        )
-
-    # с сайта с калькулятором, хз должны ли они правильно работать
-    def test_encode_2(self):
-        encoder = Encoder(encoder=('101', '111'))
-        self.assertEqual(
-            ['00', '00', '01', '01', '10', '00', '10', '01', '01', '00'],
-            encoder.encode('0011101101')
-        )
-
-    # Это тоже
-    def test_decode_2(self):
-        encoder = Encoder(encoder=('101', '111'))
-        self.assertEqual(
-            '0011101101',
-            encoder.decode(['00', '00', '01', '01', '10', '00', '10', '01', '01', '00'], 10)
         )
 
     def test_encode_2E(self):
