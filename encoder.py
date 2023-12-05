@@ -1,5 +1,5 @@
-class RoadEndError(Exception):
-    pass
+from exceptions import RoadEndError
+from utils import hamming_distance, Pathfinder
 
 
 class BinaryEncoder:
@@ -26,41 +26,6 @@ class BinaryEncoder:
     @property
     def k(self):
         return self._k
-
-
-def hamming_distance(string1: str, string2: str) -> int:
-    assert len(string1) == len(string2)
-
-    return sum([
-        0 if string1[i] == string2[i] else 1 for i in range(len(string1))
-    ])
-
-
-class Pathfinder:
-
-    @staticmethod
-    def find_path_ending_in_vertex(vertex: str, paths: dict) -> list[tuple[str, str]]:
-        res = list()
-        for edge in paths.keys():
-            if edge[1] == vertex:
-                res.append(edge)
-
-        if len(res) == 0:
-            raise KeyError(f'No paths end in ({vertex})')
-
-        return res
-
-    @staticmethod
-    def find_path_beginning_in_vertex(vertex: str, paths: dict) -> list[tuple[str, str]]:
-        res = list()
-        for edge in paths.keys():
-            if edge[0] == vertex:
-                res.append(edge)
-
-        if len(res) == 0:
-            raise KeyError(f'No paths begin in ({vertex})')
-
-        return res
 
 
 class Grid:
@@ -157,10 +122,8 @@ class Encoder:
         ) -> int:
             if depth == 0 or position >= len(sequence) - 1:
                 return metric
-            try:
-                dibit = sequence[position]
-            except IndexError:
-                print('lox', sequence, len(sequence), position)
+
+            dibit = sequence[position]
 
             paths_to_tread = Pathfinder.find_path_beginning_in_vertex(vertex, grid.paths)
 
@@ -245,5 +208,4 @@ class Encoder:
 
 
 if __name__ == "__main__":
-    encoder = Encoder(('1101', '1111'))
-    print(*((key, value) for key, value in encoder.grid.paths.items()), sep='\n')
+    pass

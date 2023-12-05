@@ -1,0 +1,2 @@
+class RoadEndError(Exception):
+    pass
