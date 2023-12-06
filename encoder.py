@@ -34,15 +34,15 @@ class Grid:
     _encoder: BinaryEncoder
     graph_builder: GraphBuilder
 
-    def create_graph_grid(self):
-        self.graph_builder.make_graph_from_grid()
+    def create_graph_grid(self, filename: str):
+        self.graph_builder.make_graph_from_grid(filename=filename)
 
-    def create_graph_path(self, translations: list[str], path: list[str]):
+    def create_graph_path(self, translations: list[str], path: list[str], filename: str):
         path_2 = [
             f'{i + 1} | {path[i]}'
             for i in range(len(path))
         ]
-        self.graph_builder.make_graph_encode(path=path_2, translations=translations)
+        self.graph_builder.make_graph_encode(path=path_2, translations=translations, filename=filename)
 
     def create_grid(self):
         for vertex_index in range(2 ** (self._encoder.k - 1)):

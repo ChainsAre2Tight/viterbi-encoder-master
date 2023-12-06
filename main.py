@@ -21,7 +21,7 @@ if __name__ == "__main__":
                         help='Maximum search distance for decoding. Default is 8',
                         required=False)
     parser.add_argument('-g', '--graph',
-                        help='if present, a graph will also be constructed and saved in result.html',
+                        help='if present, declares a name of a file to save graph that will also be constructed',
                         required=False)
 
     args = vars(parser.parse_args())
@@ -72,14 +72,17 @@ if __name__ == "__main__":
             depth_arg = 8
             print(f'Maximum search distance is set to 8 (default)')
 
-    # check if graph creation flag is provided
-    graph_flag = True if args['graph'] is not None else False
+    # check if graph creation flag is provided and validate its name
+    graph_name = args['graph'] if args['graph'] is not None else 'result'
+    restricted = set(graph_name).intersection(set('\"\\/&^%$#@!\'.,{}[]~'))
+    if len(restricted) > 0:
+        raise BadArgumentError('File name contains restricted characters:', *restricted)
 
     match task:
         case 'draw_graph':
             print('Drawing graph...')
             grid = Grid(encoder=binary_encoder)
-            grid.create_graph_grid()
+            grid.create_graph_grid(filename=graph_name)
             print('Successful')
 
         case 'encode':
@@ -88,9 +91,9 @@ if __name__ == "__main__":
             result = encoder.encode(input_args)
             print('Result:', ''.join(result[0]))
             print('Successful')
-            if graph_flag:
+            if graph_name:
                 print('Saving graph...')
-                encoder.grid.create_graph_path(*result)
+                encoder.grid.create_graph_path(*result, filename=graph_name)
                 print('Graph saved')
 
         case 'decode':
@@ -103,7 +106,7 @@ if __name__ == "__main__":
             result = encoder.decode(message_to_decode, maximum_depth=depth_arg)
             print('Result:', result)
             print('Successful')
-            if graph_flag:
+            if graph_name:
                 print('Saving graph...')
-                encoder.grid.create_graph_path(message_to_decode, result[1])
+                encoder.grid.create_graph_path(message_to_decode, result[1], filename=graph_name)
                 print('Graph saved')

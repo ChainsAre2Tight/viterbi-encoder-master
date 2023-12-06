@@ -50,7 +50,7 @@ class GraphBuilder:
                     color=self.highlight_color_primary if edge in highlight_edges else self.edge_color
                 )
 
-    def make_graph(self, translations, highlight_nodes: list[str] | None = None):
+    def make_graph(self, translations, filename: str, highlight_nodes: list[str] | None = None):
         if highlight_nodes is None:
             highlight_nodes = list()
 
@@ -88,10 +88,10 @@ class GraphBuilder:
             self._add_translations(dibit=dibit, index=index, highlight_edges=path_2)
 
         # export
-        self._graph.show('result.html')
+        self._graph.show(f'{filename}.html')
 
-    def make_graph_encode(self, translations: list[str] | tuple[str], path: list[str]):
-        self.make_graph(translations=translations, highlight_nodes=path)
+    def make_graph_encode(self, translations: list[str] | tuple[str], path: list[str], filename: str):
+        self.make_graph(translations=translations, highlight_nodes=path, filename=filename)
 
-    def make_graph_from_grid(self):
-        self.make_graph(translations=('00', '01', '10', '11'))
+    def make_graph_from_grid(self, filename: str):
+        self.make_graph(translations=('00', '01', '10', '11'), filename=filename)
