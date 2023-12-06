@@ -39,8 +39,8 @@ class Grid:
 
     def create_graph_path(self, translations: list[str], path: list[str]):
         path_2 = [
-            (f'{i + 1} | {path[i]}', f'{i + 2} | {path[i+1]}')
-            for i in range(len(path) - 1)
+            f'{i + 1} | {path[i]}'
+            for i in range(len(path))
         ]
         self.graph_builder.make_graph_encode(path=path_2, translations=translations)
 

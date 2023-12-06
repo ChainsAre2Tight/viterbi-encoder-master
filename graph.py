@@ -2,9 +2,9 @@ import pyvis
 
 
 class GraphBuilder:
-    vertex_color = 'blue'
+    vertex_color = 'gray'
     edge_color = 'black'
-    highlight_color = 'red'
+    highlight_color_primary = 'red'
     vertex_shape = 'dot'
     background_color = 'white'
     horizontal_offset = 300
@@ -18,13 +18,14 @@ class GraphBuilder:
 
         self._grid = grid
 
-    def _add_column(self, vertices: tuple[str], column_index: int):
+    def _add_column(self, vertices: tuple[str], column_index: int, highlight_nodes: list[str]):
         X = self.horizontal_offset * column_index
         for index, vertex in enumerate(vertices):
             Y = self.vertical_offset * index
+            node = f'{column_index + 1} | {vertex}'
             self._graph.add_node(
-                n_id=f'{column_index + 1} | {vertex}',
-                color=self.vertex_color,
+                n_id=node,
+                color=self.highlight_color_primary if node in highlight_nodes else self.vertex_color,
                 shape=self.vertex_shape,
                 x=X,
                 y=Y,
@@ -46,10 +47,13 @@ class GraphBuilder:
                 self._graph.add_edge(
                     edge[0], edge[1],
                     title=f'{title} ({value[dibit]})',
-                    color=self.highlight_color if edge in highlight_edges else self.edge_color
+                    color=self.highlight_color_primary if edge in highlight_edges else self.edge_color
                 )
 
-    def make_graph(self, translations, highlight_edges: list[tuple[str, str]] | None = None):
+    def make_graph(self, translations, highlight_nodes: list[str] | None = None):
+        if highlight_nodes is None:
+            highlight_nodes = list()
+
         # make 2-dimensional array of vertices to address them later
         # X - index of column
         # Y - index of vertex within its column
@@ -73,17 +77,21 @@ class GraphBuilder:
 
         # place columns
         for index, column in enumerate(vertices):
-            self._add_column(column_index=index, vertices=column)
+            self._add_column(column_index=index, vertices=column, highlight_nodes=highlight_nodes)
 
         # place edges
+        path_2 = [
+            (highlight_nodes[i], highlight_nodes[i + 1])
+            for i in range(len(highlight_nodes) - 1)
+        ]
         for index, dibit in enumerate(translations):
-            self._add_translations(dibit=dibit, index=index, highlight_edges=highlight_edges)
+            self._add_translations(dibit=dibit, index=index, highlight_edges=path_2)
 
         # export
         self._graph.show('result.html')
 
-    def make_graph_encode(self, translations: list[str] | tuple[str], path: list[tuple[str, str]]):
-        self.make_graph(translations=translations, highlight_edges=path)
+    def make_graph_encode(self, translations: list[str] | tuple[str], path: list[str]):
+        self.make_graph(translations=translations, highlight_nodes=path)
 
     def make_graph_from_grid(self):
         self.make_graph(translations=('00', '01', '10', '11'))

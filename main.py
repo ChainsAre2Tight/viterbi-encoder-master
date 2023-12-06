@@ -85,7 +85,7 @@ if __name__ == "__main__":
         case 'encode':
             print('Encoding message...')
             encoder = Encoder(encoder=binary_encoder)
-            result = encoder.encode(input_args)[0]
+            result = encoder.encode(input_args)
             print('Result:', ''.join(result[0]))
             print('Successful')
             if graph_flag:
