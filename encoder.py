@@ -80,7 +80,7 @@ class Grid:
                     else:
                         flag = True
 
-    def __init__(self, encoder: tuple[str, str] | BinaryEncoder, purge: bool = True):
+    def __init__(self, encoder: tuple[str, str] | BinaryEncoder, purge: bool = True, graph: bool = False):
 
         if isinstance(encoder, BinaryEncoder):
             self._encoder = encoder
@@ -92,25 +92,29 @@ class Grid:
 
         if purge:
             self.purge_grid()
-
-        self.graph_builder = GraphBuilder(self)
+        if graph:
+            self.graph_builder = GraphBuilder(self)
 
     @property
     def paths(self):
         return self._paths
+
+    @property
+    def encoder(self):
+        return self._encoder
 
 
 class Encoder:
     _grid: Grid
     _binary_encoder: BinaryEncoder
 
-    def __init__(self, encoder: tuple[str, str] | BinaryEncoder):
+    def __init__(self, encoder: tuple[str, str] | BinaryEncoder, graph: bool = False):
         if isinstance(encoder, BinaryEncoder):
             self._binary_encoder = encoder
         else:
             self._binary_encoder = BinaryEncoder(*encoder)
 
-        self._grid = Grid(encoder=self._binary_encoder)
+        self._grid = Grid(encoder=self._binary_encoder, graph=graph)
 
     @property
     def grid(self) -> Grid:

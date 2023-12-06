@@ -1,7 +1,6 @@
 from encoder import Encoder, BinaryEncoder, Grid
 from exceptions import BadArgumentError
 
-import sys
 import argparse
 
 default_encoder_args = '101 111'
@@ -15,7 +14,8 @@ if __name__ == "__main__":
                         binary encoder. Example (and default values) "101 111"',
                         required=False)
     parser.add_argument('-i', '--input',
-                        help='Input for program. Graph drawing doesnt require any input, enode and decode expect a binary string',
+                        help='Input for program. Graph drawing doesnt require any input, encode and decode expect a \
+                        binary string',
                         required=False)
     parser.add_argument('-d', '--depth',
                         help='Maximum search distance for decoding. Default is 8',
@@ -73,7 +73,8 @@ if __name__ == "__main__":
             print(f'Maximum search distance is set to 8 (default)')
 
     # check if graph creation flag is provided and validate its name
-    graph_name = args['graph'] if args['graph'] is not None else 'result'
+    graph_flag = args['graph'] is not None
+    graph_name = args['graph'] if graph_flag else 'result'
     restricted = set(graph_name).intersection(set('\"\\/&^%$#@!\'.,{}[]~'))
     if len(restricted) > 0:
         raise BadArgumentError('File name contains restricted characters:', *restricted)
@@ -87,7 +88,7 @@ if __name__ == "__main__":
 
         case 'encode':
             print('Encoding message...')
-            encoder = Encoder(encoder=binary_encoder)
+            encoder = Encoder(encoder=binary_encoder, graph=graph_flag)
             result = encoder.encode(input_args)
             print('Result:', ''.join(result[0]))
             print('Successful')
@@ -98,7 +99,7 @@ if __name__ == "__main__":
 
         case 'decode':
             print('Decoding message...')
-            encoder = Encoder(encoder=binary_encoder)
+            encoder = Encoder(encoder=binary_encoder, graph=graph_flag)
             message_to_decode = [
                 input_args[i:i + 2]
                 for i in range(0, len(input_args), 2)

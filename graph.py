@@ -42,7 +42,6 @@ class GraphBuilder:
                 if v == 0:
                     title = name
             if dibit in value.keys():
-
                 edge = (f'{index + 1} | {key[0]}', f'{index + 2} | {key[1]}')
                 self._graph.add_edge(
                     edge[0], edge[1],
@@ -57,11 +56,11 @@ class GraphBuilder:
         # make 2-dimensional array of vertices to address them later
         # X - index of column
         # Y - index of vertex within its column
-        format = '{0:0' + str(self._grid._encoder.k - 1) + 'b}'
+        template = '{0:0' + str(self._grid.encoder.k - 1) + 'b}'
 
         nodes: tuple[str] = tuple(
-            format.format(i)
-            for i in range(2 ** (self._grid._encoder.k - 1))
+            template.format(i)
+            for i in range(2 ** (self._grid.encoder.k - 1))
         )
 
         vertices = [
@@ -70,10 +69,11 @@ class GraphBuilder:
         ]
 
         # place translations above
-        Y = -(self.vertical_offset)
+        Y = -self.vertical_offset
         for index, translation in enumerate(translations):
             X = (self.horizontal_offset // 2) + self.horizontal_offset * index
-            self._graph.add_node(f'{index + 1} | {translation}', x=X, y=Y, shape=self.vertex_shape, color=self.background_color)
+            self._graph.add_node(f'{index + 1} | {translation}', x=X, y=Y, shape=self.vertex_shape,
+                                 color=self.background_color)
 
         # place columns
         for index, column in enumerate(vertices):
