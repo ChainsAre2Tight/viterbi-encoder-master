@@ -73,7 +73,7 @@ if __name__ == "__main__":
             print(f'Maximum search distance is set to 8 (default)')
 
     # check if graph creation flag is provided and validate its name
-    graph_flag = args['graph'] is not None
+    graph_flag = args['graph'] is not None and args['graph'] != ""
     graph_name = args['graph'] if graph_flag else 'result'
     restricted = set(graph_name).intersection(set('\"\\/&^%$#@!\'.,{}[]~'))
     if len(restricted) > 0:
