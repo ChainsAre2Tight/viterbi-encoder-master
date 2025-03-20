@@ -1,5 +1,5 @@
-from encoder import Encoder, BinaryEncoder, Grid
-from exceptions import BadArgumentError
+from src.encoder import Encoder, BinaryEncoder, Grid
+from src.exceptions import BadArgumentError
 
 import argparse
 

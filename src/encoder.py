@@ -1,6 +1,6 @@
-from exceptions import RoadEndError
-from utils import hamming_distance, Pathfinder
-from graph import GraphBuilder
+from .exceptions import RoadEndError
+from .utils import hamming_distance, Pathfinder
+from .graph import GraphBuilder
 
 
 class BinaryEncoder:
